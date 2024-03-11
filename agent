@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+###############################################################################
+# Last Updated: 19 Sep 2022
+###############################################################################
+# Reftab Checkin for Mac
+
+# Source the global variables file
+source "$(dirname "$0")/global-var.cfg"
+
+# Source the functions file
+source "$SRC/functions.sh"
+###############################################################################
+###############################################################################
+#GET ASSET from REFTAB
+###############################################################################
+
+#Gather Variables 
+
+
+# This Script will find an asset in Reftab
+# with the serial number from this device
+###############################################################################
+# Static Data From Device
+###############################################################################
+
+## Gather Details of Local PC
+        echo "This information will be used to search Reftab:"
+        echo " Serial: $SERIAL"
+        echo " Hostname: $hostname"
+        echo " UUID: $uuid"
+api-check -q
+
+get_asset_details
+wait
+REFTAB_ASSET=$(cat $SRC/asset.json | $SRC/gojq)
+#Pull the 'aid' from the asset.json file as use as a variable '$aid'
+aid=$(cat $SRC/asset.json | $SRC/gojq '.[0].aid' | sed 's/"//g')
+status=$(cat $SRC/asset.json | $SRC/gojq '.[0].status.name' | sed 's/"//g')
+loanee=$(cat $SRC/asset.json | $SRC/gojq '.[0].loanee' | sed 's/"//g')
+location=$(cat $SRC/asset.json | $SRC/gojq '.[0].locationName' | sed 's/"//g')
+#$SRC/get_asset_tags >/dev/null
+if [ "$REFTAB_ASSET" == "[]" ]; then
+    echo "Asset not found in Reftab"
+    echo "Creating Asset in Reftab"
+    create_asset_details -q
+else
+    printf "✓ Asset found in Reftab, Updating !\n"
+sleep 3
+if [ "$hostname" != "$aid" ]; then
+   printf "Hostname does not match Asset Tag\n\n"
+   printf "Current Hostname: $hostname\n"
+   printf "The Hostname should be: $aid\n"
+   echo "Renaming Device to $aid, please input your password when prompted"
+   echo "$aid" | sudo scutil --set ComputerName "$aid" 
+   echo "$aid" | sudo scutil --set LocalHostName "$aid"
+   echo "$aid" | sudo scutil --set HostName "$aid"
+   echo "Renaming Complete"
+else    
+   printf "✓ Hostname and Asset Tag match\n"
+ fi
+
+update_asset_details -q
+wait
+# Call the checkout_assets function
+checkout_asset
+ fi

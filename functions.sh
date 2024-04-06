@@ -207,7 +207,7 @@ echo "UID: $uid"
 echo "Email: $user_email"
 echo "Loan Model: $loan_model"
 
-# Add your logic to send the loan model to the Reftab API
+# logic to send the loan model to the Reftab API
 response=$($SRC/reftab.sh -m POST -e "loans" -b "${loan_model}" 2>&1)
 
 # Check if the loan was successful by looking for the "status" field in the response

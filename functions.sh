@@ -346,6 +346,9 @@ printf "\nCreating new asset in Reftab with $NEXT_TAG "
             echo $(cat $SRC/create.json | $SRC/gojq ".details.\"Last Update\"=\"$todays_date\"") > $SRC/create.json
             echo $(cat $SRC/create.json | $SRC/gojq ".details.catName=\"MacBook Pro\"") > $SRC/create.json
             echo $(cat $SRC/create.json | $SRC/gojq ".details.\"Device Type\"=\"MacBook Pro\"") > $SRC/create.json
+            # Azure ID
+            echo $(cat $SRC/create.json | $SRC/gojq ".details.\"Azure AD Device ID\"=\"$azure_id\"") > $SRC/create.json
+
 
             #echo $(cat $SRC/create.json | $SRC/gojq ".lid=2070205") > $SRC/create.json
     #   Note   
